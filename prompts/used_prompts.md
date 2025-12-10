@@ -166,3 +166,12 @@ ChunkLoadError: Loading chunk app/layout failed. (timeout: http://localhost:3000
 
 ## 13
 TextField안에서 input이 80%는 차지 할 수 있도록 inputBorderSx를 수정해줘
+
+## 14
+@user-search/core:test에서 ESM/매처 오류 해결 요청, ts-jest/tsconfig 정리, 중복 테스트 파일 제거 등 빌드/테스트 안정화 요청
+
+## 15
+@webassemblyjs/wasm-gen 모듈ToBinary 에러 및 build-wasm.js 수정, wabt 대체 등
+
+## 16
+lint/typecheck/test 실패 시 수정 (NumericComparator, any 제거, ImageData 폴리필 등) 및 E2E 포트/설정 교정, invalid hook call, Cypress 스펙 경로 문제 등
