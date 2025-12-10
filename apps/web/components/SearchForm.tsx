@@ -1,10 +1,4 @@
-import {
-  AccountType,
-  SearchFilters,
-  SearchIn,
-  SearchOrder,
-  SearchSort
-} from "@user-search/core";
+import { AccountType, SearchFilters, SearchIn, SearchOrder, SearchSort } from "@user-search/core";
 import {
   Button,
   Chip,
@@ -72,7 +66,10 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
       followers:
         followers.value === ""
           ? undefined
-          : { operator: followers.operator as any, value: Number(followers.value) || followers.value },
+          : {
+              operator: followers.operator as any,
+              value: Number(followers.value) || followers.value
+            },
       created:
         created.value === ""
           ? undefined
@@ -95,7 +92,17 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
         created.value && { label: `Created ${created.operator}${created.value}` },
         sponsorable && { label: "Sponsorable" }
       ].filter(Boolean),
-    [created.operator, created.value, followers.operator, followers.value, language, location, repos.operator, repos.value, sponsorable]
+    [
+      created.operator,
+      created.value,
+      followers.operator,
+      followers.value,
+      language,
+      location,
+      repos.operator,
+      repos.value,
+      sponsorable
+    ]
   );
 
   const toggleSearchIn = (value: SearchIn) => {
@@ -108,15 +115,18 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <TextField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
           label="Search"
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           placeholder="login, name or email"
           fullWidth
+          variant="standard"
         />
         <FormControl fullWidth>
           <InputLabel id="search-sort">Sort</InputLabel>
           <Select
+            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
             labelId="search-sort"
             id="search-sort"
             value={sort}
@@ -133,6 +143,7 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
         <FormControl fullWidth>
           <InputLabel id="search-order">Order</InputLabel>
           <Select
+            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
             labelId="search-order"
             value={order}
             label="Order"
@@ -145,10 +156,13 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
         <FormControl fullWidth>
           <InputLabel id="account-type">Type</InputLabel>
           <Select
+            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
             labelId="account-type"
             value={accountType ?? ""}
             label="Type"
-            onChange={(e) => setAccountType((e.target.value || undefined) as AccountType | undefined)}
+            onChange={(e) =>
+              setAccountType((e.target.value || undefined) as AccountType | undefined)
+            }
           >
             <MenuItem value="">All</MenuItem>
             <MenuItem value="user">User</MenuItem>
@@ -156,30 +170,36 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
           </Select>
         </FormControl>
         <TextField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
           label="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           fullWidth
+          variant="standard"
         />
         <TextField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
           label="Language"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
           fullWidth
         />
         <NumericField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
           label="Repositories"
           value={repos.value}
           operator={repos.operator}
           onChange={(value, operator) => setRepos({ value, operator })}
         />
         <NumericField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
           label="Followers"
           value={followers.value}
           operator={followers.operator}
           onChange={(value, operator) => setFollowers({ value, operator })}
         />
         <NumericField
+          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
           label="Created"
           value={created.value}
           operator={created.operator}
@@ -203,7 +223,9 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
             ))}
           </Stack>
           <FormControlLabel
-            control={<Switch checked={sponsorable} onChange={(e) => setSponsorable(e.target.checked)} />}
+            control={
+              <Switch checked={sponsorable} onChange={(e) => setSponsorable(e.target.checked)} />
+            }
             label="Sponsorable"
           />
         </Stack>
@@ -226,6 +248,7 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
 };
 
 interface NumericFieldProps {
+  className: string;
   label: string;
   value: string;
   operator: string;
@@ -233,8 +256,15 @@ interface NumericFieldProps {
   onChange: (value: string, operator: string) => void;
 }
 
-const NumericField = ({ label, value, operator, type = "number", onChange }: NumericFieldProps) => (
-  <div className="flex gap-2">
+const NumericField = ({
+  className,
+  label,
+  value,
+  operator,
+  type = "number",
+  onChange
+}: NumericFieldProps) => (
+  <div className={`flex gap-2 items-center ${className}`}>
     <FormControl className="w-28">
       <InputLabel id={`${label}-operator`}>Op</InputLabel>
       <Select
@@ -255,7 +285,7 @@ const NumericField = ({ label, value, operator, type = "number", onChange }: Num
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value, operator)}
-      className="flex-1"
+      className="flex-1 m-2 p-2"
       InputLabelProps={type === "date" ? { shrink: true } : undefined}
     />
   </div>

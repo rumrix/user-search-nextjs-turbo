@@ -116,3 +116,26 @@ C) Clean Architecture + Modularity
 ## 2
 
 이 프로젝트를 실행하기 전에 설정되어야 하는 모든 부분들은 README.md에 정리해줘
+
+## 3
+
+@webassemblyjs/wast-parser와 @webassemblyjs/wasm-gen의 기능, 특징을 npmjs 사이트와 거기에 올라와 있는 github를 기준으로 설명해주고 moduleToBinary가 사용될 수 있는지 알려줘
+
+## 4
+
+그렇다면, packages\avatar-wasm\scripts\build-wasm.js에서 아래와 같은 에러가 발생하고 있으면 환경설정부터 문제가 있었다고 판단하는게 맞을까?
+
+user-search-nextjs-turbo@ wasm:build C:\Users\User\Desktop\projects\github_public\user-search-nextjs-turbo
+pnpm --filter @user-search/avatar-wasm build
+
+@user-search/avatar-wasm@0.0.0 build C:\Users\User\Desktop\projects\github_public\user-search-nextjs-turbo\packages\avatar-wasm
+node scripts/build-wasm.js
+
+file:///C:/Users/User/Desktop/projects/github_public/user-search-nextjs-turbo/packages/avatar-wasm/scripts/build-wasm.js:5
+import { moduleToBinary } from "@webassemblyjs/wasm-gen";
+^^^^^^^^^^^^^^
+SyntaxError: Named export 'moduleToBinary' not found. The requested module '@webassemblyjs/wasm-gen' is a CommonJS module, which may not support all module.exports as named exports.
+CommonJS modules can always be imported via the default export, for example using:
+
+import pkg from '@webassemblyjs/wasm-gen';
+const { moduleToBinary } = pkg;

@@ -93,7 +93,12 @@ export const GET = async (request: NextRequest) => {
     );
   }
 
-  const githubParams = new URLSearchParams({ q, page: String(page), per_page: String(perPage), order });
+  const githubParams = new URLSearchParams({
+    q,
+    page: String(page),
+    per_page: String(perPage),
+    order
+  });
   if (sort) githubParams.set("sort", sort);
 
   const url = `${GITHUB_SEARCH}?${githubParams.toString()}`;
