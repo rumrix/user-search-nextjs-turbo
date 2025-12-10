@@ -1,0 +1,21 @@
+{
+  "totalCount": 3,
+  "hasMore": false,
+  "page": 2,
+  "perPage": 2,
+  "items": [
+    {
+      "login": "mike",
+      "id": 3,
+      "avatarUrl": "https://avatars.githubusercontent.com/u/3",
+      "htmlUrl": "https://github.com/mike",
+      "type": "User",
+      "score": 22
+    }
+  ],
+  "rateLimit": {
+    "remaining": 7,
+    "limit": 10,
+    "resetAt": "2099-01-01T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@user-search/avatar-wasm",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "node scripts/build-wasm.js",
+    "lint": "eslint . --ext .ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@webassemblyjs/wasm-gen": "^1.12.1",
+    "@webassemblyjs/wast-parser": "^1.12.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

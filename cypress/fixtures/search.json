@@ -1,0 +1,29 @@
+{
+  "totalCount": 3,
+  "hasMore": true,
+  "page": 1,
+  "perPage": 2,
+  "items": [
+    {
+      "login": "jane",
+      "id": 1,
+      "avatarUrl": "https://avatars.githubusercontent.com/u/1",
+      "htmlUrl": "https://github.com/jane",
+      "type": "User",
+      "score": 42
+    },
+    {
+      "login": "john",
+      "id": 2,
+      "avatarUrl": "https://avatars.githubusercontent.com/u/2",
+      "htmlUrl": "https://github.com/john",
+      "type": "User",
+      "score": 33
+    }
+  ],
+  "rateLimit": {
+    "remaining": 8,
+    "limit": 10,
+    "resetAt": "2099-01-01T00:00:00.000Z"
+  }
+}

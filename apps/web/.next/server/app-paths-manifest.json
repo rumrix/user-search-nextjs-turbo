@@ -1,0 +1,6 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/github/search-users/route": "app/api/github/search-users/route.js",
+  "/search/page": "app/search/page.js",
+  "/api/avatar-proxy/route": "app/api/avatar-proxy/route.js"
+}
