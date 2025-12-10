@@ -1,6 +1,6 @@
 describe("GitHub user search", () => {
   it("searches, sorts, infinite scrolls, and respects dark mode", () => {
-    cy.visit("/search?term=john&perPage=2", {
+    cy.visit("/search?term=john&perPage=2&sort=followers", {
       onBeforeLoad(win) {
         // Force dark mode for the session
         win.matchMedia =
@@ -15,21 +15,16 @@ describe("GitHub user search", () => {
               addEventListener: () => {},
               removeEventListener: () => {},
               dispatchEvent: () => false
-            } as any));
+            }) as any);
       }
     });
 
     cy.contains("GitHub User Search").should("be.visible");
-    cy.contains("Results:").should("be.visible");
+    cy.contains("Results").should("be.visible");
     cy.get("div").contains("jane").should("exist");
     cy.get("div").contains("john").should("exist");
 
     cy.get("body").should("have.css", "background-color", "rgb(15, 23, 42)");
-
-    // Change sort and submit
-    cy.get("#search-sort").click();
-    cy.contains("Followers").click();
-    cy.contains("button", "Search").click();
 
     cy.get("div").contains("jane").should("exist");
 

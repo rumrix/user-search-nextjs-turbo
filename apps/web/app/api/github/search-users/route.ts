@@ -38,45 +38,47 @@ export const GET = async (request: NextRequest) => {
   const order = searchParams.get("order") ?? "desc";
 
   if (process.env.MOCK_GITHUB === "1") {
-    const mockUsers = [
-      {
-        login: "jane",
-        id: 1,
-        avatar_url: "https://avatars.githubusercontent.com/u/1",
-        html_url: "https://github.com/jane",
-        type: "User",
-        score: 42
-      },
-      {
-        login: "john",
-        id: 2,
-        avatar_url: "https://avatars.githubusercontent.com/u/2",
-        html_url: "https://github.com/john",
-        type: "User",
-        score: 33
-      },
-      {
-        login: "mike",
-        id: 3,
-        avatar_url: "https://avatars.githubusercontent.com/u/3",
-        html_url: "https://github.com/mike",
-        type: "User",
-        score: 22
-      }
-    ];
+    const mockUsers: GithubUserSearchResponse = {
+      total_count: 3,
+      incomplete_results: false,
+      items: [
+        {
+          login: "jane",
+          id: 1,
+          avatar_url: "https://avatars.githubusercontent.com/u/1",
+          html_url: "https://github.com/jane",
+          type: "User",
+          score: 42
+        },
+        {
+          login: "john",
+          id: 2,
+          avatar_url: "https://avatars.githubusercontent.com/u/2",
+          html_url: "https://github.com/john",
+          type: "User",
+          score: 33
+        },
+        {
+          login: "mike",
+          id: 3,
+          avatar_url: "https://avatars.githubusercontent.com/u/3",
+          html_url: "https://github.com/mike",
+          type: "User",
+          score: 22
+        }
+      ]
+    };
 
     const start = (page - 1) * perPage;
-    const items = mockUsers.slice(start, start + perPage);
-    const total = mockUsers.length;
-    const hasMore = start + perPage < total;
-    return NextResponse.json({
-      totalCount: total,
-      hasMore,
-      items,
-      page,
-      perPage,
-      rateLimit: { remaining: 999, limit: 1000 }
-    });
+    const sliced = { ...mockUsers, items: mockUsers.items.slice(start, start + perPage) };
+    const mapped = mapSearchResponse(sliced, page, perPage, { remaining: 999, limit: 1000 });
+    return NextResponse.json(
+      { ...mapped, page, perPage },
+      {
+        status: 200,
+        headers: { "Cache-Control": "no-store" }
+      }
+    );
   }
 
   const token = process.env.GITHUB_TOKEN;

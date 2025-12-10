@@ -7,7 +7,7 @@
     "predev": "pnpm run wasm:build",
     "dev": "turbo dev --filter=web",
     "dev:checked": "pnpm run verify && pnpm run dev",
-    "dev:mock": "pnpm --filter web dev:mock",
+    "dev:mock": "pnpm run wasm:build && pnpm --filter web dev:mock",
     "prestart": "pnpm run wasm:build",
     "build": "turbo build",
     "start": "turbo start --filter=web",

@@ -42,7 +42,7 @@ const SearchResults = ({ items, totalCount, loading }: Props) => {
                   Type: {user.type}
                 </Typography>
                 <Chip
-                  label={`Score ${typeof user.score === "number" ? user.score.toFixed(1) : "–"}`}
+                  label={`Score ${typeof user.score === "number" ? user.score.toFixed(1) : "??"}`}
                   size="small"
                 />
               </Stack>

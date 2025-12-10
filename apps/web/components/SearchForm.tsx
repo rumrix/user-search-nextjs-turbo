@@ -42,6 +42,13 @@ const inputBorderSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 8,
     backgroundColor: "transparent",
+    "& .MuiOutlinedInput-input": {
+      paddingTop: "0.85rem",
+      paddingBottom: "0.85rem",
+      paddingLeft: "1rem",
+      paddingRight: "1rem",
+      lineHeight: 1.5
+    },
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor: "#cbd5e1"
     },
@@ -54,7 +61,8 @@ const inputBorderSx = {
   },
   "& .MuiInputLabel-root": {
     backgroundColor: "transparent",
-    paddingRight: "6px"
+    paddingRight: "6px",
+    alignContent: "center"
   }
 };
 
@@ -156,7 +164,7 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
         </Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TextField
-            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
             label="Search"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
@@ -166,16 +174,18 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
           <FormControl sx={inputBorderSx}>
             <InputLabel id="search-sort">Sort</InputLabel>
             <Select
-              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              data-cy="sort-select"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
               labelId="search-sort"
               id="search-sort"
               value={sort}
               label="Sort"
               onChange={(e) => setSort(e.target.value as SearchSort)}
               sx={inputBorderSx}
+              MenuProps={{ disablePortal: true }}
             >
               {sortOptions.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
+                <MenuItem key={opt.value} value={opt.value} data-cy={`sort-${opt.value}`}>
                   {opt.label}
                 </MenuItem>
               ))}
@@ -184,12 +194,13 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
           <FormControl sx={inputBorderSx}>
             <InputLabel id="search-order">Order</InputLabel>
             <Select
-              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
               labelId="search-order"
               value={order}
               label="Order"
               onChange={(e) => setOrder(e.target.value as SearchOrder)}
               sx={inputBorderSx}
+              MenuProps={{ disablePortal: true }}
             >
               <MenuItem value="desc">Desc</MenuItem>
               <MenuItem value="asc">Asc</MenuItem>
@@ -198,7 +209,7 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
           <FormControl sx={inputBorderSx}>
             <InputLabel id="account-type">Type</InputLabel>
             <Select
-              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
               labelId="account-type"
               value={accountType ?? ""}
               label="Type"
@@ -221,14 +232,14 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
         </Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TextField
-            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
             label="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             sx={inputBorderSx}
           />
           <TextField
-            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col justify-center"
             label="Language"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -329,6 +340,7 @@ const NumericField = ({ label, value, operator, type = "number", onChange }: Num
       </Select>
     </FormControl>
     <TextField
+      className=" flex flex-col justify-center p-4"
       label={label}
       type={type}
       value={value}

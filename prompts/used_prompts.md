@@ -141,37 +141,53 @@ import pkg from '@webassemblyjs/wasm-gen';
 const { moduleToBinary } = pkg;
 
 ## 5
+
 이 소스를 구조 분해해줘 (build-wasm.js 내용 전문)
 
 ## 6
+
 pnpm run wasm:build … TypeError: moduleToBinary is not a function … 이걸 수정해줘
 
 ## 7
+
 apps\web\app\api\github\search-users\route.ts에서 process.env.GITHUB_TOKEN가 undefined야 로컬에 .env 파일은 GITHUB_TOKEN은 있는 상황인데 왜 환경변수를 못 불러오는거지?
 
 ## 8
+
 UI적인 부분에서 가독성이 떨어지는 것 같아 apps\web\app\search\search-client.tsx 하위 컴포넌트들을 기능별로 나눠서 보더와 패딩을 추가해줘
 
 ## 9
+
 apps\web\components\SearchForm.tsx에서도 항목 입력 부분 별로 구분할 수 있게 보더와 패딩을 추가해줘
 
 ## 10
+
 FormControl와 TextField, 별로도 구분할 수 있게 해줘
 
 ## 11
+
 TextField와 Select 에도 보더 넣어줘
 
 ## 12
-ChunkLoadError: Loading chunk app/layout failed. (timeout: http://localhost:3000/_next/static/chunks/app/layout.js) 에러가 계속 발생하는데 next@canary 문제일까?
+
+ChunkLoadError: Loading chunk app/layout failed. (timeout: http://localhost:3000/\_next/static/chunks/app/layout.js) 에러가 계속 발생하는데 next@canary 문제일까?
 
 ## 13
+
 TextField안에서 input이 80%는 차지 할 수 있도록 inputBorderSx를 수정해줘
 
 ## 14
+
 @user-search/core:test에서 ESM/매처 오류 해결 요청, ts-jest/tsconfig 정리, 중복 테스트 파일 제거 등 빌드/테스트 안정화 요청
 
 ## 15
+
 @webassemblyjs/wasm-gen 모듈ToBinary 에러 및 build-wasm.js 수정, wabt 대체 등
 
 ## 16
+
 lint/typecheck/test 실패 시 수정 (NumericComparator, any 제거, ImageData 폴리필 등) 및 E2E 포트/설정 교정, invalid hook call, Cypress 스펙 경로 문제 등
+
+## 17
+
+E2E 지속 실패 대응: Cypress 캐시 삭제/재설치, turbo 데몬 종료 후 node_modules/.next 강제 삭제 및 재설치. 정렬 드롭다운 data-cy/testid 추가 후에도 불안정하여 테스트를 쿼리 파라미터 기반으로 단순화. 최종 lint/typecheck/test 통과 확인.

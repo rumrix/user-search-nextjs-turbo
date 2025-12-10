@@ -22,9 +22,7 @@ interface Props {
 const SearchClient = ({ filters, initialResponse, queryKey }: Props) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { items, totalCount, hasMore, status, error, rateLimit } = useAppSelector(
-    (state) => state.search
-  );
+  const { items, totalCount, hasMore, status, error, rateLimit } = useAppSelector((state) => state.search);
 
   useEffect(() => {
     dispatch(hydrateFromServer({ response: initialResponse, filters, queryKey }));
@@ -41,6 +39,12 @@ const SearchClient = ({ filters, initialResponse, queryKey }: Props) => {
   const loadMore = useCallback(() => {
     dispatch(fetchNextPage());
   }, [dispatch]);
+
+  // Fallback to server payload during the very first render to avoid empty UI before hydration
+  const hydratedItems = items.length ? items : initialResponse.items ?? [];
+  const hydratedTotal = totalCount || initialResponse.totalCount || 0;
+  const hydratedHasMore = typeof hasMore === "boolean" ? hasMore : Boolean(initialResponse.hasMore);
+  const hydratedStatus = status === "idle" && !items.length && initialResponse.items?.length ? "idle" : status;
 
   return (
     <Container maxWidth="xl" className="py-2 space-y-6">
@@ -74,11 +78,15 @@ const SearchClient = ({ filters, initialResponse, queryKey }: Props) => {
           <Divider flexItem />
         </Box>
         <Box className="p-4">
-          <SearchResults items={items} totalCount={totalCount} loading={status === "loading"} />
+          <SearchResults
+            items={hydratedItems}
+            totalCount={hydratedTotal}
+            loading={hydratedStatus === "loading"}
+          />
           <InfiniteLoader
-            hasMore={hasMore}
+            hasMore={hydratedHasMore}
             onLoadMore={loadMore}
-            disabled={status === "loading" || Boolean(error)}
+            disabled={hydratedStatus === "loading" || Boolean(error)}
           />
           {error && (
             <Alert severity="warning" className="mt-4">

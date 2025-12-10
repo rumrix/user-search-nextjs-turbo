@@ -10,8 +10,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "e2e": "start-server-and-test \"cross-env MOCK_GITHUB=1 PORT=3001 next dev\" http://localhost:3001 \"pnpm run e2e:run\"",
-    "e2e:run": "cross-env MOCK_GITHUB=1 cypress run --project ../../ --config-file ../../cypress.config.ts --config baseUrl=http://localhost:3001"
+    "e2e": "start-server-and-test \"cross-env MOCK_GITHUB=1 PORT=3001 NEXT_PUBLIC_SITE_URL=http://localhost:3001 next dev\" http://localhost:3001 \"pnpm run e2e:run\"",
+    "e2e:run": "cd ../../ && cross-env MOCK_GITHUB=1 cypress run --config-file cypress.config.ts --config baseUrl=http://localhost:3001"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

@@ -14,11 +14,16 @@ export interface LoadedMask {
 
 export const loadMaskWasm = async (wasmUrl: string): Promise<LoadedMask> => {
   const fetchWasm = async () => {
+    // Prefer streaming for speed, but gracefully fall back when MIME/content-type is not application/wasm.
     if ("instantiateStreaming" in WebAssembly && typeof WebAssembly.instantiateStreaming === "function") {
-      const res = await fetch(wasmUrl);
-      return WebAssembly.instantiateStreaming(res);
+      try {
+        const res = await fetch(wasmUrl, { cache: "no-store" });
+        return await WebAssembly.instantiateStreaming(res);
+      } catch {
+        // ignore and fall through to arrayBuffer path
+      }
     }
-    const buffer = await fetch(wasmUrl).then((r) => r.arrayBuffer());
+    const buffer = await fetch(wasmUrl, { cache: "no-store" }).then((r) => r.arrayBuffer());
     return WebAssembly.instantiate(buffer);
   };
 
@@ -27,7 +32,7 @@ export const loadMaskWasm = async (wasmUrl: string): Promise<LoadedMask> => {
     (instantiated as WebAssembly.WebAssemblyInstantiatedSource).instance ??
     ((instantiated as { exports?: unknown }) as WebAssembly.Instance);
   const exports = (instance as WebAssembly.Instance).exports as { mask?: LoadedMask["mask"] };
-  const mask = exports.mask ?? (() => 0);
+  const mask = typeof exports.mask === "function" ? exports.mask : () => 1;
   return { mask };
 };
 
