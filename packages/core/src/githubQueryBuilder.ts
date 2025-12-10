@@ -1,16 +1,9 @@
-import {
-  AccountType,
-  DateFilter,
-  NumericFilter,
-  SearchFilters,
-  SearchOrder,
-  SearchSort
-} from "./searchTypes";
+import { DateFilter, NumericFilter, SearchFilters, SearchOrder, SearchSort } from "./searchTypes";
 
 const DEFAULT_PER_PAGE = 20;
 
 const comparatorValue = (filter?: NumericFilter | DateFilter) =>
-  filter?.value !== undefined && filter.value !== null && filter.value !== Number.NaN;
+  filter?.value !== undefined && filter.value !== null && !Number.isNaN(filter.value as number);
 
 const applyNumeric = (key: string, filter?: NumericFilter | DateFilter) => {
   if (!filter || !comparatorValue(filter)) {

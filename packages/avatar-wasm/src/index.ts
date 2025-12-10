@@ -22,8 +22,12 @@ export const loadMaskWasm = async (wasmUrl: string): Promise<LoadedMask> => {
     return WebAssembly.instantiate(buffer);
   };
 
-  const instance = (await fetchWasm()) as WebAssembly.WebAssemblyInstantiatedSource;
-  const mask = (instance.instance ?? (instance as any)).exports.mask as LoadedMask["mask"];
+  const instantiated = (await fetchWasm()) as WebAssembly.WebAssemblyInstantiatedSource;
+  const instance: WebAssembly.Instance =
+    (instantiated as WebAssembly.WebAssemblyInstantiatedSource).instance ??
+    ((instantiated as { exports?: unknown }) as WebAssembly.Instance);
+  const exports = (instance as WebAssembly.Instance).exports as { mask?: LoadedMask["mask"] };
+  const mask = exports.mask ?? (() => 0);
   return { mask };
 };
 

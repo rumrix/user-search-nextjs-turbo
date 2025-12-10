@@ -5,6 +5,7 @@ const createJestConfig = nextJest({ dir: "./" });
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testEnvironment: "jsdom",
+  testPathIgnorePatterns: ["/node_modules/", "/packages/"],
   moduleNameMapper: {
     "^@user-search/core/(.*)$": "<rootDir>/../../packages/core/src/$1",
     "^@user-search/core$": "<rootDir>/../../packages/core/src/index.ts",

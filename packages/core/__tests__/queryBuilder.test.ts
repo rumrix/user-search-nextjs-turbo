@@ -26,7 +26,7 @@ describe("query builder", () => {
       language: "typescript",
       repos: { value: 5, operator: ">=" },
       followers: { value: 10, operator: ">" },
-      created: { value: 20200101, operator: ">=" },
+      created: { value: "20200101", operator: ">=" },
       sponsorable: true
     });
     expect(query).toContain("john");
@@ -58,11 +58,7 @@ describe("query builder", () => {
 
 describe("dedupe and pagination", () => {
   it("dedupes by login", () => {
-    const deduped = dedupeUsersByLogin([
-      { login: "a" },
-      { login: "b" },
-      { login: "a" }
-    ]);
+    const deduped = dedupeUsersByLogin([{ login: "a" }, { login: "b" }, { login: "a" }]);
     expect(deduped).toHaveLength(2);
     expect(deduped.map((u) => u.login)).toEqual(["a", "b"]);
   });
@@ -89,7 +85,7 @@ describe("rate limits", () => {
 
   it("detects when to short circuit on rate limit", () => {
     const now = Math.floor(Date.now() / 1000);
-    const info = { remaining: 0, reset: now + 120 } as any;
+    const info = { remaining: 0, reset: now + 120 } as { remaining: number; reset: number };
     expect(shouldShortCircuitRateLimit(info)).toBe(true);
   });
 });

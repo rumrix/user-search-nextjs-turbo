@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   description: "Search GitHub users with filters, infinite scroll, and canvas avatars."
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${notoSans.className} bg-slate-50 text-slate-900 dark:bg-slate-900`}>

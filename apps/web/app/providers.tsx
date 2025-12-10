@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 "use client";
 
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";

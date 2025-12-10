@@ -15,13 +15,24 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["apps/web/.next/**", "apps/web/public/wasm/**"]
+      "outputs": [
+        "apps/web/.next/**",
+        "apps/web/public/wasm/**",
+        "packages/core/dist/**",
+        "packages/avatar-wasm/dist/**"
+      ]
     },
     "dev": {
       "cache": false
     },
     "e2e": {
       "cache": false
+    },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build", "build"],
+      "outputs": []
     }
   }
 }

@@ -58,11 +58,12 @@ export const fetchNextPage = createAsyncThunk<
         return rejectWithValue(json?.error?.message ?? "Request failed");
       }
       return { response: json as SearchApiResponse, requestId };
-    } catch (error: any) {
-      if (error?.name === "AbortError") {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Request failed";
+      if (message === "aborted" || (error as any)?.name === "AbortError") {
         return rejectWithValue("aborted");
       }
-      return rejectWithValue(error?.message ?? "Request failed");
+      return rejectWithValue(message);
     }
   },
   {

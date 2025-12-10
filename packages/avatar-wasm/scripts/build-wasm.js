@@ -6,7 +6,7 @@ import wabt from "wabt";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const outDir = path.resolve(__dirname, "../../apps/web/public/wasm");
+const outDir = path.resolve(__dirname, "../../../apps/web/public/wasm");
 mkdirSync(outDir, { recursive: true });
 
 const wat = `(module

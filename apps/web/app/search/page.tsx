@@ -13,24 +13,25 @@ const fetchInitial = async (params: URLSearchParams): Promise<SearchApiResponse>
     const res = await fetch(`${baseUrl}/api/github/search-users?${params.toString()}`, {
       cache: "no-store"
     });
-    const json = (await res.json()) as SearchApiResponse | { error?: SearchResponse["error"] };
+    const json = (await res.json()) as SearchApiResponse & { error?: SearchResponse["error"] };
     return {
-      page: (json as SearchApiResponse).page ?? Number(params.get("page") ?? "1"),
-      perPage: (json as SearchApiResponse).perPage ?? Number(params.get("per_page") ?? "20"),
-      items: (json as SearchApiResponse).items ?? [],
-      totalCount: (json as SearchApiResponse).totalCount ?? 0,
-      hasMore: (json as SearchApiResponse).hasMore ?? false,
-      rateLimit: (json as SearchApiResponse).rateLimit,
-      error: (json as any).error
+      page: json.page ?? Number(params.get("page") ?? "1"),
+      perPage: json.perPage ?? Number(params.get("per_page") ?? "20"),
+      items: json.items ?? [],
+      totalCount: json.totalCount ?? 0,
+      hasMore: json.hasMore ?? false,
+      rateLimit: json.rateLimit,
+      error: json.error
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to load";
     return {
       page: Number(params.get("page") ?? "1"),
       perPage: Number(params.get("per_page") ?? "20"),
       items: [],
       totalCount: 0,
       hasMore: false,
-      error: { type: "server_error", message: error?.message ?? "Failed to load" }
+      error: { type: "server_error", message }
     };
   }
 };

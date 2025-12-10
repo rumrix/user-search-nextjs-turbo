@@ -1,5 +1,14 @@
-import { AccountType, SearchFilters, SearchIn, SearchOrder, SearchSort } from "@user-search/core";
+import { useMemo, useState, type FormEvent } from "react";
 import {
+  AccountType,
+  NumericComparator,
+  SearchFilters,
+  SearchIn,
+  SearchOrder,
+  SearchSort
+} from "@user-search/core";
+import {
+  Box,
   Button,
   Chip,
   FormControl,
@@ -9,9 +18,9 @@ import {
   Select,
   Stack,
   Switch,
-  TextField
+  TextField,
+  Typography
 } from "@mui/material";
-import { useMemo, useState } from "react";
 
 interface Props {
   initial: SearchFilters;
@@ -26,7 +35,30 @@ const sortOptions: { value: SearchSort; label: string }[] = [
 ];
 
 const searchInOptions: SearchIn[] = ["login", "name", "email"];
-const comparators = [">=", ">", "<=", "<", "="];
+const comparators: NumericComparator[] = [">=", ">", "<=", "<", "="];
+
+const inputBorderSx = {
+  width: "100%",
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 8,
+    backgroundColor: "transparent",
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#cbd5e1"
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#94a3b8"
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#0284c7"
+    }
+  },
+  "& .MuiInputLabel-root": {
+    backgroundColor: "transparent",
+    paddingRight: "6px"
+  }
+};
+
+type NumericState = { operator: NumericComparator; value: string };
 
 const SearchForm = ({ initial, onSubmit }: Props) => {
   const [term, setTerm] = useState(initial.term ?? "");
@@ -34,24 +66,29 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
   const [accountType, setAccountType] = useState<AccountType | undefined>(initial.accountType);
   const [location, setLocation] = useState(initial.location ?? "");
   const [language, setLanguage] = useState(initial.language ?? "");
-  const [repos, setRepos] = useState({
-    operator: initial.repos?.operator ?? ">=",
+  const [repos, setRepos] = useState<NumericState>({
+    operator: (initial.repos?.operator as NumericComparator) ?? ">=",
     value: initial.repos?.value ? String(initial.repos.value) : ""
   });
-  const [followers, setFollowers] = useState({
-    operator: initial.followers?.operator ?? ">=",
+  const [followers, setFollowers] = useState<NumericState>({
+    operator: (initial.followers?.operator as NumericComparator) ?? ">=",
     value: initial.followers?.value ? String(initial.followers.value) : ""
   });
-  const [created, setCreated] = useState({
-    operator: initial.created?.operator ?? ">=",
+  const [created, setCreated] = useState<NumericState>({
+    operator: (initial.created?.operator as NumericComparator) ?? ">=",
     value: initial.created?.value ? String(initial.created.value) : ""
   });
   const [sponsorable, setSponsorable] = useState(Boolean(initial.sponsorable));
   const [sort, setSort] = useState<SearchSort>(initial.sort ?? "best");
   const [order, setOrder] = useState<SearchOrder>(initial.order ?? "desc");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const toNumber = (value: string) => {
+      const numeric = Number(value);
+      return Number.isNaN(numeric) ? undefined : numeric;
+    };
+
     const nextFilters: SearchFilters = {
       ...initial,
       term,
@@ -59,21 +96,23 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
       accountType,
       location: location || undefined,
       language: language || undefined,
-      repos:
-        repos.value === ""
-          ? undefined
-          : { operator: repos.operator as any, value: Number(repos.value) || repos.value },
-      followers:
-        followers.value === ""
+      repos: (() => {
+        if (repos.value === "") return undefined;
+        const numeric = toNumber(repos.value);
+        return numeric === undefined ? undefined : { operator: repos.operator, value: numeric };
+      })(),
+      followers: (() => {
+        if (followers.value === "") return undefined;
+        const numeric = toNumber(followers.value);
+        return numeric === undefined
           ? undefined
           : {
-              operator: followers.operator as any,
-              value: Number(followers.value) || followers.value
-            },
+              operator: followers.operator,
+              value: numeric
+            };
+      })(),
       created:
-        created.value === ""
-          ? undefined
-          : { operator: created.operator as any, value: created.value },
+        created.value === "" ? undefined : { operator: created.operator, value: created.value },
       sponsorable,
       sort,
       order,
@@ -82,28 +121,26 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
     onSubmit(nextFilters);
   };
 
-  const chips = useMemo(
-    () =>
-      [
-        location && { label: `Location: ${location}` },
-        language && { label: `Language: ${language}` },
-        repos.value && { label: `Repos ${repos.operator}${repos.value}` },
-        followers.value && { label: `Followers ${followers.operator}${followers.value}` },
-        created.value && { label: `Created ${created.operator}${created.value}` },
-        sponsorable && { label: "Sponsorable" }
-      ].filter(Boolean),
-    [
-      created.operator,
-      created.value,
-      followers.operator,
-      followers.value,
-      language,
-      location,
-      repos.operator,
-      repos.value,
-      sponsorable
-    ]
-  );
+  const chips = useMemo(() => {
+    const list: { label: string }[] = [];
+    if (location) list.push({ label: `Location: ${location}` });
+    if (language) list.push({ label: `Language: ${language}` });
+    if (repos.value) list.push({ label: `Repos ${repos.operator}${repos.value}` });
+    if (followers.value) list.push({ label: `Followers ${followers.operator}${followers.value}` });
+    if (created.value) list.push({ label: `Created ${created.operator}${created.value}` });
+    if (sponsorable) list.push({ label: "Sponsorable" });
+    return list;
+  }, [
+    created.operator,
+    created.value,
+    followers.operator,
+    followers.value,
+    language,
+    location,
+    repos.operator,
+    repos.value,
+    sponsorable
+  ]);
 
   const toggleSearchIn = (value: SearchIn) => {
     setSearchIn((prev) =>
@@ -113,101 +150,118 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <TextField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
-          label="Search"
-          value={term}
-          onChange={(e) => setTerm(e.target.value)}
-          placeholder="login, name or email"
-          fullWidth
-          variant="standard"
-        />
-        <FormControl fullWidth>
-          <InputLabel id="search-sort">Sort</InputLabel>
-          <Select
-            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-            labelId="search-sort"
-            id="search-sort"
-            value={sort}
-            label="Sort"
-            onChange={(e) => setSort(e.target.value as SearchSort)}
-          >
-            {sortOptions.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="search-order">Order</InputLabel>
-          <Select
-            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-            labelId="search-order"
-            value={order}
-            label="Order"
-            onChange={(e) => setOrder(e.target.value as SearchOrder)}
-          >
-            <MenuItem value="desc">Desc</MenuItem>
-            <MenuItem value="asc">Asc</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="account-type">Type</InputLabel>
-          <Select
-            className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-            labelId="account-type"
-            value={accountType ?? ""}
-            label="Type"
-            onChange={(e) =>
-              setAccountType((e.target.value || undefined) as AccountType | undefined)
-            }
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="org">Organization</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
-          label="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          fullWidth
-          variant="standard"
-        />
-        <TextField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2 p-2"
-          label="Language"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          fullWidth
-        />
-        <NumericField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-          label="Repositories"
-          value={repos.value}
-          operator={repos.operator}
-          onChange={(value, operator) => setRepos({ value, operator })}
-        />
-        <NumericField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-          label="Followers"
-          value={followers.value}
-          operator={followers.operator}
-          onChange={(value, operator) => setFollowers({ value, operator })}
-        />
-        <NumericField
-          className="rounded-lg border border-slate-400 dark:border-slate-100 m-2"
-          label="Created"
-          value={created.value}
-          operator={created.operator}
-          type="date"
-          onChange={(value, operator) => setCreated({ value, operator })}
-        />
-        <Stack direction="row" spacing={2} alignItems="center" className="md:col-span-2">
-          <Stack direction="row" spacing={2}>
+      <Box className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-3">
+        <Typography variant="subtitle2" className="text-slate-600 dark:text-slate-300">
+          Query & Sort
+        </Typography>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <TextField
+            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            label="Search"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="login, name or email"
+            sx={inputBorderSx}
+          />
+          <FormControl sx={inputBorderSx}>
+            <InputLabel id="search-sort">Sort</InputLabel>
+            <Select
+              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              labelId="search-sort"
+              id="search-sort"
+              value={sort}
+              label="Sort"
+              onChange={(e) => setSort(e.target.value as SearchSort)}
+              sx={inputBorderSx}
+            >
+              {sortOptions.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={inputBorderSx}>
+            <InputLabel id="search-order">Order</InputLabel>
+            <Select
+              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              labelId="search-order"
+              value={order}
+              label="Order"
+              onChange={(e) => setOrder(e.target.value as SearchOrder)}
+              sx={inputBorderSx}
+            >
+              <MenuItem value="desc">Desc</MenuItem>
+              <MenuItem value="asc">Asc</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={inputBorderSx}>
+            <InputLabel id="account-type">Type</InputLabel>
+            <Select
+              className="rounded-lg border border-slate-200 dark:border-slate-700"
+              labelId="account-type"
+              value={accountType ?? ""}
+              label="Type"
+              onChange={(e) =>
+                setAccountType((e.target.value || undefined) as AccountType | undefined)
+              }
+              sx={inputBorderSx}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="user">User</MenuItem>
+              <MenuItem value="org">Organization</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </Box>
+
+      <Box className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-3">
+        <Typography variant="subtitle2" className="text-slate-600 dark:text-slate-300">
+          Filters
+        </Typography>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <TextField
+            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            label="Location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            sx={inputBorderSx}
+          />
+          <TextField
+            className="rounded-lg border border-slate-200 dark:border-slate-700"
+            label="Language"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            sx={inputBorderSx}
+          />
+          <NumericField
+            label="Repositories"
+            value={repos.value}
+            operator={repos.operator}
+            onChange={(value, operator) => setRepos({ value, operator })}
+          />
+          <NumericField
+            label="Followers"
+            value={followers.value}
+            operator={followers.operator}
+            onChange={(value, operator) => setFollowers({ value, operator })}
+          />
+          <NumericField
+            label="Created"
+            value={created.value}
+            operator={created.operator}
+            type="date"
+            onChange={(value, operator) => setCreated({ value, operator })}
+          />
+        </div>
+      </Box>
+
+      <Box className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-3">
+        <Typography variant="subtitle2" className="text-slate-600 dark:text-slate-300">
+          Toggles
+        </Typography>
+        <Stack direction="row" spacing={2} alignItems="center" className="flex-wrap">
+          <Stack direction="row" spacing={2} className="flex-wrap">
             {searchInOptions.map((opt) => (
               <FormControlLabel
                 key={opt}
@@ -229,16 +283,18 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
             label="Sponsorable"
           />
         </Stack>
-      </div>
+      </Box>
+
       {chips.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {chips.map((chip, idx) => (
-            <Chip key={idx} label={(chip as any).label} />
+        <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+          {chips.map((chip) => (
+            <Chip key={chip.label} label={chip.label} />
           ))}
         </div>
       )}
-      <div className="flex items-center gap-3">
-        <Button variant="contained" color="primary" type="submit">
+
+      <div className="flex items-center gap-3 dark:text-slate-300">
+        <Button variant="contained" color="primary" type="submit" className="dark:bg-sky-900">
           Search
         </Button>
         <span className="text-sm text-slate-500">Server renders page 1; scroll to load more.</span>
@@ -248,30 +304,22 @@ const SearchForm = ({ initial, onSubmit }: Props) => {
 };
 
 interface NumericFieldProps {
-  className: string;
   label: string;
   value: string;
-  operator: string;
+  operator: NumericComparator;
   type?: string;
-  onChange: (value: string, operator: string) => void;
+  onChange: (value: string, operator: NumericComparator) => void;
 }
 
-const NumericField = ({
-  className,
-  label,
-  value,
-  operator,
-  type = "number",
-  onChange
-}: NumericFieldProps) => (
-  <div className={`flex gap-2 items-center ${className}`}>
+const NumericField = ({ label, value, operator, type = "number", onChange }: NumericFieldProps) => (
+  <Box className="flex gap-2 rounded-lg border border-slate-200 dark:border-slate-700 p-2 items-center">
     <FormControl className="w-28">
       <InputLabel id={`${label}-operator`}>Op</InputLabel>
       <Select
         labelId={`${label}-operator`}
         value={operator}
         label="Operator"
-        onChange={(e) => onChange(value, e.target.value)}
+        onChange={(e) => onChange(value, e.target.value as NumericComparator)}
       >
         {comparators.map((comp) => (
           <MenuItem key={comp} value={comp}>
@@ -285,10 +333,10 @@ const NumericField = ({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value, operator)}
-      className="flex-1 m-2 p-2"
+      sx={{ ...inputBorderSx, width: "100%" }}
       InputLabelProps={type === "date" ? { shrink: true } : undefined}
     />
-  </div>
+  </Box>
 );
 
 export default SearchForm;

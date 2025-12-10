@@ -1,13 +1,29 @@
-import { SearchFilters, SearchIn, SearchOrder, SearchSort } from "@user-search/core";
+import {
+  NumericComparator,
+  SearchFilters,
+  SearchIn,
+  SearchOrder,
+  SearchSort
+} from "@user-search/core";
 
 const parseNumericFilter = (value?: string) => {
   if (!value) return undefined;
   const match = value.match(/(>=|<=|>|<|=)?(.+)/);
   if (!match) return undefined;
-  const operator = (match[1] as any) ?? ">=";
-  const numericCandidate = Number(match[2]);
-  const parsedValue = Number.isNaN(numericCandidate) ? match[2] : numericCandidate;
-  return { operator, value: parsedValue as any };
+  const operator = (match[1] as NumericComparator | undefined) ?? ">=";
+  const parsedValue = Number(match[2]);
+  if (Number.isNaN(parsedValue)) return undefined;
+  return { operator, value: parsedValue };
+};
+
+const parseDateFilter = (value?: string) => {
+  if (!value) return undefined;
+  const match = value.match(/(>=|<=|>|<|=)?(.+)/);
+  if (!match) return undefined;
+  const operator = (match[1] as NumericComparator | undefined) ?? ">=";
+  const dateValue = match[2]?.trim();
+  if (!dateValue) return undefined;
+  return { operator, value: dateValue };
 };
 
 export const filtersFromSearchParams = (
@@ -38,7 +54,7 @@ export const filtersFromSearchParams = (
     language: get("language") ?? undefined,
     repos: parseNumericFilter(get("repos")),
     followers: parseNumericFilter(get("followers")),
-    created: parseNumericFilter(get("created")),
+    created: parseDateFilter(get("created")),
     sponsorable: get("sponsorable") === "true",
     page: Number(get("page") ?? "1") || 1,
     perPage: Number(get("perPage") ?? "20") || 20,
@@ -56,13 +72,15 @@ export const filtersToSearchParams = (filters: SearchFilters): URLSearchParams =
   if (filters.accountType) params.set("type", filters.accountType);
   if (filters.location) params.set("location", filters.location);
   if (filters.language) params.set("language", filters.language);
-  const numeric = (key: string, filter?: { operator?: string; value: number }) => {
+  const numeric = (key: string, filter?: { operator?: NumericComparator; value: number }) => {
     if (!filter || filter.value === undefined || Number.isNaN(filter.value)) return;
     params.set(key, `${filter.operator ?? ">="}${filter.value}`);
   };
   numeric("repos", filters.repos);
   numeric("followers", filters.followers);
-  numeric("created", filters.created);
+  if (filters.created?.value) {
+    params.set("created", `${filters.created.operator ?? ">="}${filters.created.value}`);
+  }
   if (filters.sponsorable) params.set("sponsorable", "true");
   params.set("page", String(filters.page ?? 1));
   params.set("perPage", String(filters.perPage ?? 20));

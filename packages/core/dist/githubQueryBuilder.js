@@ -1,5 +1,5 @@
 const DEFAULT_PER_PAGE = 20;
-const comparatorValue = (filter) => filter?.value !== undefined && filter.value !== null && filter.value !== Number.NaN;
+const comparatorValue = (filter) => filter?.value !== undefined && filter.value !== null && !Number.isNaN(filter.value);
 const applyNumeric = (key, filter) => {
     if (!filter || !comparatorValue(filter)) {
         return "";
